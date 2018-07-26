@@ -17,7 +17,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  */
-
+// sjaksnaksj
 #include <glib.h>
 #include <errno.h>
 #include <stdbool.h>
