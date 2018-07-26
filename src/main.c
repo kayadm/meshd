@@ -71,6 +71,18 @@ gboolean tmp_prov(gpointer d)
 	return true;
 }
 
+gboolean tmp_prov1235(gpointer d)
+{
+	/* tmp self provision network */
+	if (!net)
+		net = network_provision_new();
+
+	/* provision peer device */
+	uint8_t uuid[16] = { };
+	provision_device(NULL, uuid, 0, 0x1235, tmp_provion_cb);
+
+	return true;
+}
 /* SIGUSR2 Send msg to 0x1234 */
 gboolean tmp_sendmsg(gpointer d)
 {
@@ -83,6 +95,21 @@ gboolean tmp_sendmsg(gpointer d)
 	g_message("send msg network %p nid=%x", net, net->nid);
 	transport_up_send_access_msg(net,
 				     data, sizeof(data) - 4, net->addr, 0x1234, 0);
+
+	return true;
+}
+
+gboolean tmp_sendmsg1235(gpointer d)
+{
+	char data[] = "hello world this is a long message...";
+	struct network *net = g_list_first(node.network_l)->data;
+
+	if (!net)
+		g_message("No network");
+
+	g_message("send msg network %p nid=%x", net, net->nid);
+	transport_up_send_access_msg(net,
+				     data, sizeof(data) - 4, net->addr, 0x1235, 0);
 
 	return true;
 }
@@ -114,11 +141,13 @@ int main(int argc, char *argv[])
 	}
 
 	/* Signal handlers */
-	//sid0 = g_unix_signal_add(SIGINT, signal_handler_interrupt, mainloop);
+	
 	/* tmp for dbg purpose */
 	sid1 = g_unix_signal_add(SIGUSR1, tmp_prov, mainloop);
 	sid2 = g_unix_signal_add(SIGUSR2, tmp_sendmsg, mainloop);
-	element_create(0);
+        sid0 = g_unix_signal_add(SIGINT, tmp_prov1235, mainloop);
+        sid3 = g_unix_signal_add(SIGTERM, tmp_sendmsg1235, mainloop);
+ 	element_create(0);
 
 	crypto_init();
 	network_init();
