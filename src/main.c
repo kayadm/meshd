@@ -47,6 +47,7 @@ gboolean signal_handler_interrupt(gpointer data)
 	return G_SOURCE_CONTINUE;
 }
 
+<<<<<<< HEAD
 
 static void tmp_provion_cb(int result)
 {
@@ -114,6 +115,8 @@ gboolean tmp_sendmsg1235(gpointer d)
 	return true;
 }
 
+=======
+>>>>>>> org_meshd/master
 static const struct option main_options[] = {
 	{ "help", no_argument, NULL, 'h' },
 	{ "interactive", no_argument, NULL, 'i' },
@@ -122,7 +125,6 @@ static const struct option main_options[] = {
 
 int main(int argc, char *argv[])
 {
-	guint sid0, sid1, sid2, sid3;
 	bool interactive;
 
 	mainloop = g_main_loop_new(NULL, FALSE);
@@ -140,6 +142,7 @@ int main(int argc, char *argv[])
 		}
 	}
 
+<<<<<<< HEAD
 	/* Signal handlers */
 	
 	/* tmp for dbg purpose */
@@ -148,6 +151,9 @@ int main(int argc, char *argv[])
         sid0 = g_unix_signal_add(SIGINT, tmp_prov1235, mainloop);
         sid3 = g_unix_signal_add(SIGTERM, tmp_sendmsg1235, mainloop);
  	element_create(0);
+=======
+	element_create(0);
+>>>>>>> org_meshd/master
 
 	crypto_init();
 	network_init();
@@ -162,11 +168,6 @@ int main(int argc, char *argv[])
 
 	crypto_cleanup();
 	network_cleanup();
-
-	g_source_remove(sid0);
-	g_source_remove(sid1);
-	g_source_remove(sid2);
-	g_source_remove(sid3);
 
 	g_main_loop_unref(mainloop);
 
