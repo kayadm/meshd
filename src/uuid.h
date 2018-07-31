@@ -1,14 +1,14 @@
 #ifndef _UUID_H
 #define _UUID_H
 
+#include <sys/socket.h>
+#include <sys/ioctl.h>
+#include <linux/if.h>
+#include <net/if.h>
 #include <time.h>
 #include <stdio.h>
-#include <stdlib.h>
-#include <sys/socket.h>
-#include <linux/if.h>
+#include <stdlib.h> 
 #include <netdb.h>
-#include <sys/ioctl.h>
-#include <net/if.h> 
 #include <unistd.h>
 #include <netinet/in.h>
 #include <string.h>
@@ -23,7 +23,7 @@ static char *UUID() {
 
 	uint8_t clock_id = nrand14(12);
 	if (old_tmstmp > timeNano) {
-		clock_id++;
+		clock_id = clock_id + 1;
 	}
 	char arr_clock[] = convertNumberIntoArray(clock_id);
 	char stamp_hex[15];
