@@ -21,8 +21,8 @@ static char *UUID() {
 	clock_gettime(CLOCK_REALTIME, &spc);
 	int64_t timeNano = spc.tv_nsec;
 
-	uint8_t clock_id = nrand14(12);
-	if (old_tmstmp > timeNano) {
+	uint8_t clock_id = nrand14();
+	if (old_tstmp > timeNano) {
 		clock_id = clock_id + 1;
 	}
 	char arr_clock[] = convertNumberIntoArray(clock_id);
@@ -84,7 +84,7 @@ static uint16_t nrand14(int n) {
 	return v;
 }
 
-static void get_mac_addr(unsigned char *idx[6]) {
+static void get_mac_addr(unsigned char *idx[12]) {
 	struct ifreq ifr;
 	struct ifconf ifc;
 	char buf[1024];
