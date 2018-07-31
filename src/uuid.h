@@ -118,7 +118,7 @@ static void get_mac_addr(unsigned char *idx[12]) {
 void dec_to_hexadecimal(uint64_t n, char *hex[]) {
 	long int decimalNumber, remainder, quotient;
 	int i = 1, j, temp;
-	char hexadecimalNumber[100];
+	char hexadecimal[100];
 	decimalNumber = n;
 	quotient = decimalNumber;
 	while (quotient != 0) {
@@ -134,7 +134,7 @@ void dec_to_hexadecimal(uint64_t n, char *hex[]) {
 	return 0;
 }
 
-char * convertNumberIntoArray(unsigned int number) {
+char * convertNumberIntoArray(uint8_t number) {
 	unsigned int length = (int)(log10((float)number)) + 1;
 	char * arr = (char *)malloc(length * sizeof(char)), *curr = arr;
 	do {
