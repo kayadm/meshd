@@ -1,3 +1,6 @@
+#ifndef _UUID_H
+#define _UUID_H
+
 #include <time.h>
 #include <stdio.h>
 #include <stdlib.h>
