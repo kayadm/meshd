@@ -32,6 +32,7 @@
 #include "transport.h"
 #include "bearer.h"
 #include "access.h"
+#include "uuid.h"
 
 #include "interfaces/interface.h"
 
@@ -79,6 +80,7 @@ int main(int argc, char *argv[])
 	network_init();
 	provision_init();
 	bearer_adv_init();
+	node.uuid = UUID();
 	configuration_server_model_init();
 
 	if (interactive)

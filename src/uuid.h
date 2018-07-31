@@ -14,7 +14,7 @@
 #include <string.h>
 #include <math.h>
 
-static char UUID() {	
+static char *UUID() {	
 	unsigned char mac_addr[12];
 	struct timespec spc;
 	int64_t old_tstmp = 0;
