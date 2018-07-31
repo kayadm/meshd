@@ -9,10 +9,10 @@
 #include <unistd.h>
 #include <netinet/in.h>
 #include <string.h>
+#include <math.h>
 
-struct UUID() {
-	char uuid_gen[16];
-	unsigned char mac_addr[6];
+static char UUID() {	
+	unsigned char mac_addr[12];
 	struct timespec spc;
 	int64_t old_tstmp = 0;
 	clock_gettime(CLOCK_REALTIME, &spc);
@@ -22,8 +22,38 @@ struct UUID() {
 	if (old_tmstmp > timeNano) {
 		clock_id++;
 	}
+	char arr_clock[] = convertNumberIntoArray(clock_id);
+	char stamp_hex[15];
 	get_mac_addr(mac_addr);
+	dec_to_hexadecimal(timeNano, stamp_hex);
+	char uuid[32];
+	int idx1 = 0;
+	for (int i = 7; i < 15; ++i) {
+		uuid[idx1] = stamp_hex[i];
+		idx1++;
+	}
+	for (int i = 3; i < 7; ++i) {
+		uuid[idx1] = stamp_hex[i];
+		idx1++;
+	}
+	uuid[12] = 1;
+	idx1 = 13;
+	for (int i = 0; i < 3; ++i) {
+		uuid[idx1] = stamp_hex[i];
+		idx1++;
+	}
+	idx1 = 16;
+	for (int i = 0; i < sizeof(arr_clock); ++i) {
+		uuid[idx1] = arr_clock[i];
+		idx1++;
+	}
+	idx1 = 20;
+	for (int i = 0; i < sizeof(mac_addr); ++i) {
+		uuid[idx1] = mac_addr[i];
+		idx1++;
+	}
 
+	return uuid;
 }
 
 static int randto(int n) {
@@ -42,7 +72,7 @@ static void shuffle(unsigned *x, size_t n) {
 	}
 }
 
-uint16_t nrand14(int n) {
+static uint16_t nrand14(int n) {
 	uint16_t v = 0;
 	static unsigned pos[16] = { 0, 1,  2,  3,  4,  5,  6,  7,
 		8, 9, 10, 11, 12, 13 };
@@ -51,7 +81,7 @@ uint16_t nrand14(int n) {
 	return v;
 }
 
-void get_mac_addr(unsigned char *idx[6]) {
+static void get_mac_addr(unsigned char *idx[6]) {
 	struct ifreq ifr;
 	struct ifconf ifc;
 	char buf[1024];
@@ -80,4 +110,33 @@ void get_mac_addr(unsigned char *idx[6]) {
 		else { /* handle error */ }
 	}
 	if (success) memcpy(idx, ifr.ifr_hwaddr.sa_data, 6);
+}
+
+void dec_to_hexadecimal(uint64_t n, char *hex[]) {
+	long int decimalNumber, remainder, quotient;
+	int i = 1, j, temp;
+	char hexadecimalNumber[100];
+	decimalNumber = n;
+	quotient = decimalNumber;
+	while (quotient != 0) {
+		temp = quotient % 16;
+		//To convert integer into character
+		if (temp < 10)
+			temp = temp + 48; else
+			temp = temp + 55;
+		hexadecimal[i++] = temp;
+		quotient = quotient / 16;
+	}
+	memcpy(hex, hexadeciaml, sizeof(hexadecimal));
+	return 0;
+}
+
+char * convertNumberIntoArray(unsigned int number) {
+	unsigned int length = (int)(log10((float)number)) + 1;
+	char * arr = (char *)malloc(length * sizeof(char)), *curr = arr;
+	do {
+		*curr++ = number % 10;
+		number /= 10;
+	} while (number != 0);
+	return arr;
 }

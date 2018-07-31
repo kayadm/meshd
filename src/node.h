@@ -37,7 +37,7 @@ struct node_st {
 	uint16_t cid;
        	uint16_t pid;
 	uint16_t vid;
-       	uint16_t crpl;
+       	uint16_t crpl;	
 };
 
 extern struct node_st node;
