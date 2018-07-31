@@ -1,6 +1,6 @@
 # meshd
 Bluetooth mesh stack POC for Linux
-In development...
+WARNING: This branch will not compile at this state.
 
 dependencies:
 - glib
