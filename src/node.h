@@ -22,8 +22,8 @@
 #define __NODE_H
 
 #include <glib.h>
-#include <uuid.h>
 
+#include "uuid.h"
 #include "crypto.h"
 
 struct node_st {
