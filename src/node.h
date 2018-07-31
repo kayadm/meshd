@@ -22,6 +22,7 @@
 #define __NODE_H
 
 #include <glib.h>
+#include <bluez/lib/uuid.h>
 
 #include "crypto.h"
 
@@ -37,6 +38,7 @@ struct node_st {
        	uint16_t pid;
 	uint16_t vid;
        	uint16_t crpl;
+		uuid = bt_uuid16_create();
 };
 
 extern struct node_st node;
