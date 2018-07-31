@@ -38,7 +38,18 @@ struct node_st {
        	uint16_t pid;
 	uint16_t vid;
        	uint16_t crpl;
-		uuid = bt_uuid16_create();
+		FILE *fp;
+		char command_uuid[1035];
+		fp = _popen("/bin/uuidgen ", "r");
+		if (fp == NULL) {
+			g_message("Failed to get a unique UUID.");
+			exit(1);
+		}
+
+		while(fgets(command_uuid, sizeof(command_uuid) - 1, fp) != NULL) {
+			g_message("%s", command_uuid);
+		}
+		_pclose(fp);
 };
 
 extern struct node_st node;
