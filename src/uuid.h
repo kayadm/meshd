@@ -3,8 +3,8 @@
 
 #include <sys/socket.h>
 #include <sys/ioctl.h>
-#include <linux/if.h>
 #include <net/if.h>
+#include <linux/if.h>
 #include <time.h>
 #include <stdio.h>
 #include <stdlib.h> 
