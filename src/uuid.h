@@ -27,7 +27,8 @@ static char *UUID() {
 	}
 
 	char * convertNumberIntoArray(unsigned int number);
-	char arr_clock[] = convertNumberIntoArray(clock_id);
+	char arr_clock[4];
+	memcpy(arr_clock, convertNumberIntoArray(clock_id), 4);
 	char stamp_hex[15];
 	get_mac_addr(mac_addr);
 	dec_to_hexadecimal(timeNano, stamp_hex);
