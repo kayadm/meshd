@@ -21,6 +21,7 @@ static char *UUID() {
 	clock_gettime(CLOCK_REALTIME, &spc);
 	int64_t timeNano = spc.tv_nsec;
 
+	static uint16_t nrand14(int n);
 	uint16_t clock_id = nrand14(120);
 	if (old_tstmp > timeNano) {
 		clock_id = clock_id + 1;
