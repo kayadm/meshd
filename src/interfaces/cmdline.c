@@ -105,9 +105,7 @@ static int cmd_set_uuid(int argc, char *argv[])
 
 static int cmd_get_uuid(int argc, char *argv[])
 {
-	char *uuid[32];
-	//UUID(&uuid);
-	sprintf("%llx\n", get_clock());
+	printf("%llx\n", get_clock());
 	
 	return 0;
 }

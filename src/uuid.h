@@ -80,12 +80,9 @@ void get_mac_addr(unsigned char idx[12]) {
 	}
 	if (success) memcpy(idx, ifr.ifr_hwaddr.sa_data, 6);
 }
-
-static char hex [] = { '0', '1', '2', '3', '4', '5', '6', '7',
-                        '8', '9' ,'A', 'B', 'C', 'D', 'E', 'F' };
  
-void intToHex(long long n, char *buf[100]) {
-	char hex[100];
+/**void intToHex(long long n, char *buf[15]) {
+	char hex[15];
 	int i = 0;
 		while (n != 0) {
 			long long temp = 0;
@@ -99,9 +96,9 @@ void intToHex(long long n, char *buf[100]) {
 			}
 			n = n / 16;
 	}
-	memcpy(buf, hex, sizeof(hex));
-}
-static long long get_clock() {
+	memcpy(buf, hex, 100);
+}**/
+long long get_clock() {
 	struct timespec spc;
 	clock_gettime(CLOCK_REALTIME, &spc);
 	long long timeNano = spc.tv_sec;
@@ -110,7 +107,7 @@ static long long get_clock() {
 	return timeNano;
 }
 
-void UUID(char *buf) {	
+/**void UUID(char *buf) {	
 	unsigned char mac_addr[12];
 	uint64_t timeNano = get_clock();
 	int64_t old_tstmp = 0;
@@ -122,9 +119,9 @@ void UUID(char *buf) {
 
 	char * convertNumberIntoArray(uint16_t number);
 	char arr_clock[4];
-	memcpy(arr_clock, convertNumberIntoArray(clock_id), 4);
-	char stamp_hex[100]; 
-	intToHex(timeNano, &stamp_hex);
+	memcpy(arr_clock, convertNumberIntoArray(clock_id), 4); 
+	char stamp_hex[15];
+	intToHex(timeNano, stamp_hex);
 	get_mac_addr(mac_addr);
 	char str[12];
 	
@@ -166,6 +163,6 @@ void UUID(char *buf) {
 		i++;
 	}
 	memcpy(buf, uuid, 32);
-}
+}**/
 
 #endif
