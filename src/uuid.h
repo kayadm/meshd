@@ -21,7 +21,7 @@ static char *UUID() {
 	clock_gettime(CLOCK_REALTIME, &spc);
 	int64_t timeNano = spc.tv_nsec;
 
-	uint8_t clock_id = nrand14();
+	unsigned int clock_id = nrand14(5);
 	if (old_tstmp > timeNano) {
 		clock_id = clock_id + 1;
 	}
@@ -29,6 +29,7 @@ static char *UUID() {
 	char stamp_hex[15];
 	get_mac_addr(mac_addr);
 	dec_to_hexadecimal(timeNano, stamp_hex);
+	
 	char uuid[32];
 	int idx1 = 0;
 	for (int i = 7; i < 15; ++i) {
@@ -59,6 +60,16 @@ static char *UUID() {
 	return uuid;
 }
 
+char * convertNumberIntoArray(unsigned int number) {
+	unsigned int length = (int)(log10((float)number)) + 1;
+	char * arr = (char *)malloc(length * sizeof(char)), *curr = arr;
+	do {
+		*curr++ = number % 10;
+		number /= 10;
+	} while (number != 0);
+	return arr;
+}
+
 static int randto(int n) {
 	int r;
 	int maxrand = (RAND_MAX / n) * n;
@@ -84,7 +95,7 @@ static uint16_t nrand14(int n) {
 	return v;
 }
 
-static void get_mac_addr(unsigned char *idx[12]) {
+void get_mac_addr(unsigned char *idx[12]) {
 	struct ifreq ifr;
 	struct ifconf ifc;
 	char buf[1024];
@@ -130,16 +141,9 @@ void dec_to_hexadecimal(uint64_t n, char *hex[]) {
 		hexadecimal[i++] = temp;
 		quotient = quotient / 16;
 	}
-	memcpy(hex, hexadeciaml, sizeof(hexadecimal));
+	memcpy(hex, hexadecimal, sizeof(hexadecimal));
 	return 0;
 }
 
-char * convertNumberIntoArray(uint8_t number) {
-	unsigned int length = (int)(log10((float)number)) + 1;
-	char * arr = (char *)malloc(length * sizeof(char)), *curr = arr;
-	do {
-		*curr++ = number % 10;
-		number /= 10;
-	} while (number != 0);
-	return arr;
-}
+
+#endif
