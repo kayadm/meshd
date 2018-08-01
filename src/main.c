@@ -80,7 +80,7 @@ int main(int argc, char *argv[])
 	network_init();
 	provision_init();
 	bearer_adv_init();
-	node.uuid = UUID();
+	memcpy(node.uuid, UUID, sizeof(UUID));
 	configuration_server_model_init();
 
 	if (interactive)

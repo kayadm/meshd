@@ -21,7 +21,7 @@ static char *UUID() {
 	clock_gettime(CLOCK_REALTIME, &spc);
 	int64_t timeNano = spc.tv_nsec;
 
-	uint16_t int clock_id = nrand14();
+	uint16_t clock_id = nrand14();
 	if (old_tstmp > timeNano) {
 		clock_id = clock_id + 1;
 	}
@@ -62,7 +62,7 @@ static char *UUID() {
 	return uuid;
 }
 
-char * convertNumberIntoArray(unsigned int number) {
+char * convertNumberIntoArray(uint16_t number) {
 	unsigned int length = (int)(log10((float)number)) + 1;
 	char * arr = (char *)malloc(length * sizeof(char)), *curr = arr;
 	do {
