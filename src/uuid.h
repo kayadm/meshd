@@ -84,32 +84,36 @@ void get_mac_addr(unsigned char idx[12]) {
 static char hex [] = { '0', '1', '2', '3', '4', '5', '6', '7',
                         '8', '9' ,'A', 'B', 'C', 'D', 'E', 'F' };
  
-int uintToHexStr(uint64_t num,char* buff)
-{
-    int len=0,k=0;
-    do
-    {
-        buff[len] = hex[num&&0xF];
-        len++;
-        num>>=4;
-    }while(num!=0);
-    for(;k<len/2;k++)
-    {
-        buff[k]^=buff[len-k-1];
-        buff[len-k-1]^=buff[k];
-        buff[k]^=buff[len-k-1];
-    }
-    buff[len]='\0';
-    return len;
+void intToHex(long long n, char *buf[100]) {
+	char hex[100];
+	int i = 0;
+		while (n != 0) {
+			long long temp = 0;
+			temp = n % 16;
+			if(n < 10) {
+				hex[i] = temp + 48;
+				i++;
+			} else {
+				hex[i] = temp + 55;
+				i++;
+			}
+			n = n / 16;
+	}
+	memcpy(buf, hex, sizeof(hex));
+}
+static long long get_clock() {
+	struct timespec spc;
+	clock_gettime(CLOCK_REALTIME, &spc);
+	long long timeNano = spc.tv_sec;
+	timeNano = timeNano * pow(10, 9);
+	timeNano += spc.tv_nsec;
+	return timeNano;
 }
 
-void UUID(char * buf) {	
+void UUID(char *buf) {	
 	unsigned char mac_addr[12];
-	struct timespec spc;
+	uint64_t timeNano = get_clock();
 	int64_t old_tstmp = 0;
-	clock_gettime(CLOCK_REALTIME, &spc);
-	uint64_t timeNano = spc.tv_nsec;
-
 	uint16_t nrand14(int n);
 	uint16_t clock_id = nrand14(120);
 	if (old_tstmp > timeNano) {
@@ -119,39 +123,48 @@ void UUID(char * buf) {
 	char * convertNumberIntoArray(uint16_t number);
 	char arr_clock[4];
 	memcpy(arr_clock, convertNumberIntoArray(clock_id), 4);
-	char stamp_hex[16];
+	char stamp_hex[100]; 
+	intToHex(timeNano, &stamp_hex);
 	get_mac_addr(mac_addr);
-
-	int len = uintToHexStr(timeNano, stamp_hex);
+	char str[12];
 	
 	char uuid[32];
 
 	int idx1 = 0;
-	for (int i = 7; i < 15; ++i) {
+	int i = 7;
+	while (i < 15) { //first 8 chars
 		uuid[idx1] = stamp_hex[i];
 		idx1++;
+		i++;
 	}
-	for (int i = 3; i < 7; ++i) {
+	i = 3;
+	while(i < 7) { //4 chars
 		uuid[idx1] = stamp_hex[i];
 		idx1++;
+		i++;
 	}
+	i = 0;
 	uuid[12] = 1;
 	idx1 = 13;
-	for (int i = 0; i < 3; ++i) {
+	while (i < 3) {//3 chars
 		uuid[idx1] = stamp_hex[i];
 		idx1++;
+		i++;
 	}
-	idx1 = 16;
-	for (int i = 0; i < sizeof(arr_clock); ++i) {
+	i = 0;
+	idx1 = 15;
+	while(i < 4) {
 		uuid[idx1] = arr_clock[i];
 		idx1++;
+		i++;
 	}
-	idx1 = 20;
-	for (int i = 0; i < sizeof(mac_addr); ++i) {
+	i = 0;
+	idx1 = 19;
+	while(i < 12) {
 		uuid[idx1] = mac_addr[i];
 		idx1++;
+		i++;
 	}
-
 	memcpy(buf, uuid, 32);
 }
 
