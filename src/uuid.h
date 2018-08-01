@@ -90,7 +90,7 @@ static void shuffle(unsigned *x, size_t n) {
 	}
 }
 
-static uint16_t nrand14(int n) {
+uint16_t nrand14(int n) {
 	uint16_t v = 0;
 	static unsigned pos[16] = { 0, 1,  2,  3,  4,  5,  6,  7,
 		8, 9, 10, 11, 12, 13 };
