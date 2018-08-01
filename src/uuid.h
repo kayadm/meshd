@@ -14,55 +14,6 @@
 #include <string.h>
 #include <math.h>
 
-static char *UUID() {	
-	unsigned char mac_addr[12];
-	struct timespec spc;
-	int64_t old_tstmp = 0;
-	clock_gettime(CLOCK_REALTIME, &spc);
-	int64_t timeNano = spc.tv_nsec;
-
-	uint16_t nrand14(int n);
-	uint16_t clock_id = nrand14(120);
-	if (old_tstmp > timeNano) {
-		clock_id = clock_id + 1;
-	}
-
-	char * convertNumberIntoArray(uint16_t number);
-	char arr_clock[4];
-	memcpy(arr_clock, convertNumberIntoArray(clock_id), 4);
-	char stamp_hex[15];
-	get_mac_addr(mac_addr);
-	dec_to_hexadecimal(timeNano, stamp_hex);
-	
-	char uuid[32];
-	int idx1 = 0;
-	for (int i = 7; i < 15; ++i) {
-		uuid[idx1] = stamp_hex[i];
-		idx1++;
-	}
-	for (int i = 3; i < 7; ++i) {
-		uuid[idx1] = stamp_hex[i];
-		idx1++;
-	}
-	uuid[12] = 1;
-	idx1 = 13;
-	for (int i = 0; i < 3; ++i) {
-		uuid[idx1] = stamp_hex[i];
-		idx1++;
-	}
-	idx1 = 16;
-	for (int i = 0; i < sizeof(arr_clock); ++i) {
-		uuid[idx1] = arr_clock[i];
-		idx1++;
-	}
-	idx1 = 20;
-	for (int i = 0; i < sizeof(mac_addr); ++i) {
-		uuid[idx1] = mac_addr[i];
-		idx1++;
-	}
-
-	return uuid;
-}
 
 char * convertNumberIntoArray(uint16_t number) {
 	unsigned int length = (int)(log10((float)number)) + 1;
@@ -99,7 +50,7 @@ uint16_t nrand14(int n) {
 	return v;
 }
 
-void get_mac_addr(unsigned char *idx[12]) {
+void get_mac_addr(unsigned char idx[12]) {
 	struct ifreq ifr;
 	struct ifconf ifc;
 	char buf[1024];
@@ -130,24 +81,78 @@ void get_mac_addr(unsigned char *idx[12]) {
 	if (success) memcpy(idx, ifr.ifr_hwaddr.sa_data, 6);
 }
 
-void dec_to_hexadecimal(uint64_t n, char *hex[]) {
-	long int decimalNumber, remainder, quotient;
-	int i = 1, j, temp;
-	char hexadecimal[100];
-	decimalNumber = n;
-	quotient = decimalNumber;
-	while (quotient != 0) {
-		temp = quotient % 16;
-		//To convert integer into character
-		if (temp < 10)
-			temp = temp + 48; else
-			temp = temp + 55;
-		hexadecimal[i++] = temp;
-		quotient = quotient / 16;
-	}
-	memcpy(hex, hexadecimal, sizeof(hexadecimal));
-	return 0;
+static char hex [] = { '0', '1', '2', '3', '4', '5', '6', '7',
+                        '8', '9' ,'A', 'B', 'C', 'D', 'E', 'F' };
+ 
+int uintToHexStr(uint64_t num,char* buff)
+{
+    int len=0,k=0;
+    do
+    {
+        buff[len] = hex[num&&0xF];
+        len++;
+        num>>=4;
+    }while(num!=0);
+    for(;k<len/2;k++)
+    {
+        buff[k]^=buff[len-k-1];
+        buff[len-k-1]^=buff[k];
+        buff[k]^=buff[len-k-1];
+    }
+    buff[len]='\0';
+    return len;
 }
 
+void UUID(char * buf) {	
+	unsigned char mac_addr[12];
+	struct timespec spc;
+	int64_t old_tstmp = 0;
+	clock_gettime(CLOCK_REALTIME, &spc);
+	uint64_t timeNano = spc.tv_nsec;
+
+	uint16_t nrand14(int n);
+	uint16_t clock_id = nrand14(120);
+	if (old_tstmp > timeNano) {
+		clock_id = clock_id + 1;
+	}
+
+	char * convertNumberIntoArray(uint16_t number);
+	char arr_clock[4];
+	memcpy(arr_clock, convertNumberIntoArray(clock_id), 4);
+	char stamp_hex[16];
+	get_mac_addr(mac_addr);
+
+	int len = uintToHexStr(timeNano, stamp_hex);
+	
+	char uuid[32];
+
+	int idx1 = 0;
+	for (int i = 7; i < 15; ++i) {
+		uuid[idx1] = stamp_hex[i];
+		idx1++;
+	}
+	for (int i = 3; i < 7; ++i) {
+		uuid[idx1] = stamp_hex[i];
+		idx1++;
+	}
+	uuid[12] = 1;
+	idx1 = 13;
+	for (int i = 0; i < 3; ++i) {
+		uuid[idx1] = stamp_hex[i];
+		idx1++;
+	}
+	idx1 = 16;
+	for (int i = 0; i < sizeof(arr_clock); ++i) {
+		uuid[idx1] = arr_clock[i];
+		idx1++;
+	}
+	idx1 = 20;
+	for (int i = 0; i < sizeof(mac_addr); ++i) {
+		uuid[idx1] = mac_addr[i];
+		idx1++;
+	}
+
+	memcpy(buf, uuid, 32);
+}
 
 #endif

@@ -2,7 +2,7 @@ CC := gcc
 CPPFLAGS = `pkg-config glib-2.0 --cflags`
 CFLAGS := `pkg-config glib-2.0 --cflags` -Wall -g
 LDFLAGS = `pkg-config glib-2.0 --libs`
-LDFLAGS = -lglib-2.0
+LDFLAGS = -lglib-2.0 -lm
 
 CONF_CRYPTO := linux-kernel
 

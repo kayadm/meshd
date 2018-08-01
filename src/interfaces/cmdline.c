@@ -7,6 +7,7 @@
 #include "../utils.h"
 #include "../node.h"
 
+#include "../uuid.h"
 #include "interface.h"
 
 static int out;
@@ -104,9 +105,9 @@ static int cmd_set_uuid(int argc, char *argv[])
 
 static int cmd_get_uuid(int argc, char *argv[])
 {
-	char uuid[37];
+	char *uuid[37];
 
-	uuid128_to_str(node.uuid, uuid);
+	UUID(uuid);
 
 	dprintf(out, "%s\n", uuid);
 

@@ -32,7 +32,7 @@ struct node_st {
 	enum {  STATE_UNPROVISIONED,
 		STATE_PROVISIONING,
 		STATE_PROVISIONED } state;
-	char uuid[32];
+	char uuid[16];
 	uint16_t cid;
        	uint16_t pid;
 	uint16_t vid;
