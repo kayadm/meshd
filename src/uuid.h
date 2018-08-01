@@ -21,11 +21,13 @@ static char *UUID() {
 	clock_gettime(CLOCK_REALTIME, &spc);
 	int64_t timeNano = spc.tv_nsec;
 
-	unsigned int clock_id = nrand14(5);
+	unsigned int clock_id = nrand14();
 	if (old_tstmp > timeNano) {
 		clock_id = clock_id + 1;
 	}
-	char arr_clock[] = convertNumberIntoArray(clock_id);
+
+	char * convertNumberIntoArray(unsigned int number);
+	char arr_clock = convertNumberIntoArray(clock_id);
 	char stamp_hex[15];
 	get_mac_addr(mac_addr);
 	dec_to_hexadecimal(timeNano, stamp_hex);
