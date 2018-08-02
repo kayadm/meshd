@@ -105,9 +105,9 @@ static int cmd_set_uuid(int argc, char *argv[])
 
 static int cmd_get_uuid(int argc, char *argv[])
 {
-	char hex[100];
-	sprintf(hex,"%llx",get_clock());
-	dprintf(out, "%s\n", hex);
+	char *uuid;
+	uuid = UUID();
+	printf("%s\n", uuid);
 	return 0;
 }
 

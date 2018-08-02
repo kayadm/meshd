@@ -120,62 +120,70 @@ long long get_clock() {
 	return timeNano;
 }
 
-/**void UUID(char *buf) {	
-	unsigned char mac_addr[12];
-	uint64_t timeNano = get_clock();
+char* UUID() {	
+	char *mac_addr;
+	mac_addr = get_mac_addr();
+	char stamp_hex[100];
+	long long int timeNano = get_clock();
+	sprintf(stamp_hex, "%llx", timeNano);
 	int64_t old_tstmp = 0;
 	uint16_t nrand14(int n);
 	uint16_t clock_id = nrand14(120);
 	if (old_tstmp > timeNano) {
-		clock_id = clock_id + 1;
+		clock_id++;
 	}
 
 	char * convertNumberIntoArray(uint16_t number);
 	char arr_clock[4];
 	memcpy(arr_clock, convertNumberIntoArray(clock_id), 4); 
-	char stamp_hex[15];
-	intToHex(timeNano, stamp_hex);
 	get_mac_addr(mac_addr);
-	char str[12];
 	
-	char uuid[32];
+	char *uuid[32];
 
 	int idx1 = 0;
 	int i = 7;
+	dprintf(out, "%s\n", "All components gathered.");
 	while (i < 15) { //first 8 chars
-		uuid[idx1] = stamp_hex[i];
+		uuid[idx1] = &stamp_hex[i];
 		idx1++;
 		i++;
 	}
+	dprintf(out, "%s\n", "First loop finished.");
 	i = 3;
 	while(i < 7) { //4 chars
-		uuid[idx1] = stamp_hex[i];
+		uuid[idx1] = &stamp_hex[i];
 		idx1++;
 		i++;
 	}
+	printf("%s\n", uuid);
+	dprintf(out, "%s\n", "Second loop finished.");
 	i = 0;
-	uuid[12] = 1;
+	int x = 1;
+	uuid[12] = &x;
 	idx1 = 13;
 	while (i < 3) {//3 chars
-		uuid[idx1] = stamp_hex[i];
+		uuid[idx1] = &stamp_hex[i];
 		idx1++;
 		i++;
 	}
+	dprintf(out, "%s\n", "Third loop finished.");
 	i = 0;
 	idx1 = 15;
 	while(i < 4) {
-		uuid[idx1] = arr_clock[i];
+		uuid[idx1] = &arr_clock[i];
 		idx1++;
 		i++;
 	}
+	dprintf(out, "%s\n", "Fourth loop finished.");
 	i = 0;
 	idx1 = 19;
 	while(i < 12) {
-		uuid[idx1] = mac_addr[i];
+		uuid[idx1] = &mac_addr[i];
 		idx1++;
 		i++;
 	}
-	memcpy(buf, uuid, 32);
-}**/
+	dprintf(out, "%s\n", "Last loop finished.");
+	return uuid[0];
+}
 
 #endif
