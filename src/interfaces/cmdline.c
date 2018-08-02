@@ -107,7 +107,10 @@ static int cmd_get_uuid(int argc, char *argv[])
 {
 	char *uuid;
 	uuid = UUID();
-	printf("%s\n", uuid);
+	char uuidPrt[32] = {0};
+	for (int i = 0; i < 32; ++i) {
+		printf("%d\n", *(uuid + i));
+	}
 	return 0;
 }
 

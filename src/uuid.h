@@ -138,20 +138,20 @@ char* UUID() {
 	memcpy(arr_clock, convertNumberIntoArray(clock_id), 4); 
 	get_mac_addr(mac_addr);
 	
-	char *uuid[32];
+	static char uuid[32];
 
 	int idx1 = 0;
 	int i = 7;
 	dprintf(out, "%s\n", "All components gathered.");
 	while (i < 15) { //first 8 chars
-		uuid[idx1] = &stamp_hex[i];
+		uuid[idx1] = stamp_hex[i];
 		idx1++;
 		i++;
 	}
 	dprintf(out, "%s\n", "First loop finished.");
 	i = 3;
 	while(i < 7) { //4 chars
-		uuid[idx1] = &stamp_hex[i];
+		uuid[idx1] = stamp_hex[i];
 		idx1++;
 		i++;
 	}
@@ -159,10 +159,10 @@ char* UUID() {
 	dprintf(out, "%s\n", "Second loop finished.");
 	i = 0;
 	int x = 1;
-	uuid[12] = &x;
+	uuid[12] = x;
 	idx1 = 13;
 	while (i < 3) {//3 chars
-		uuid[idx1] = &stamp_hex[i];
+		uuid[idx1] = stamp_hex[i];
 		idx1++;
 		i++;
 	}
@@ -170,7 +170,7 @@ char* UUID() {
 	i = 0;
 	idx1 = 15;
 	while(i < 4) {
-		uuid[idx1] = &arr_clock[i];
+		uuid[idx1] = arr_clock[i];
 		idx1++;
 		i++;
 	}
@@ -178,12 +178,13 @@ char* UUID() {
 	i = 0;
 	idx1 = 19;
 	while(i < 12) {
-		uuid[idx1] = &mac_addr[i];
+		uuid[idx1] = mac_addr[i];
 		idx1++;
 		i++;
 	}
 	dprintf(out, "%s\n", "Last loop finished.");
-	return uuid[0];
+	
+	return uuid;
 }
 
 #endif
