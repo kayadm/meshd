@@ -124,7 +124,7 @@ char* UUID() {
 	char *mac_addr;
 	mac_addr = get_mac_addr();
 	char stamp_hex[100];
-	long long int timeNano = get_clock();
+	unsigned long long int timeNano = get_clock();
 	sprintf(stamp_hex, "%llx", timeNano);
 	int64_t old_tstmp = 0;
 	uint16_t nrand14(int n);
@@ -134,10 +134,10 @@ char* UUID() {
 	}
 
 	char * convertNumberIntoArray(uint16_t number);
-	char arr_clock[4];
+	char arr_clock[4] = {0};
 	memcpy(arr_clock, convertNumberIntoArray(clock_id), 4); 
 	get_mac_addr(mac_addr);
-	
+	printf("%s", arr_clock);
 	static char uuid[32];
 
 	int idx1 = 0;
@@ -183,7 +183,7 @@ char* UUID() {
 		i++;
 	}
 	dprintf(out, "%s\n", "Last loop finished.");
-	
+	dprintf(out, "%s\n", uuid);
 	return uuid;
 }
 
