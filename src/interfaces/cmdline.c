@@ -107,6 +107,14 @@ static int cmd_get_uuid(int argc, char *argv[])
 {
 	char hex[100];
 	sprintf(hex,"%llx",get_clock());
+	dprintf(out, "%s\n", hex);
+	return 0;
+}
+
+static int cmd_get_mac(int argc, char *argv[]) {
+	char *mac_address;
+	mac_address = get_mac_addr();
+	printf("%s\n", mac_address);
 	return 0;
 }
 
@@ -199,6 +207,11 @@ static const struct cmd cmdlist[] = {
 		.name = "help",
 		.desc = "\thelp menu",
 		.function = cmd_help,
+	},
+	{
+		.name = "get-mac",
+		.desc = "\t get mac address of local device.",
+		.function = cmd_get_mac,
 	},
 };
 

@@ -51,7 +51,7 @@ uint16_t nrand14(int n) {
 	return v;
 }
 
-void get_mac_addr(unsigned char idx[12]) {
+char* get_mac_addr() {
 	struct ifreq ifr;
 	struct ifconf ifc;
 	char buf[1024];
@@ -79,7 +79,16 @@ void get_mac_addr(unsigned char idx[12]) {
 		}
 		else { /* handle error */ }
 	}
-	if (success) memcpy(idx, ifr.ifr_hwaddr.sa_data, 6);
+	char *ret;
+	ret = malloc(sizeof(char) * 1025);
+	if (success) strcpy(ret, ifr.ifr_hwaddr.sa_data);
+	return ret;
+	/**if (success) {
+		dprintf(out, "%s\n", "mac initializetion complete. Copying to pointed string.");
+		for (int i = 0; i < 1024; ++i) {
+			idx[i] = ifr.ifr_hwaddr.sa_data[i];
+		}
+	}**/
 }
  
 /**void intToHex(long long n, char buf[]) {
