@@ -14,6 +14,7 @@
 #include <string.h>
 #include <math.h>
 
+static int out;
 
 char * convertNumberIntoArray(uint16_t number) {
 	unsigned int length = (int)(log10((float)number)) + 1;
@@ -81,22 +82,25 @@ void get_mac_addr(unsigned char idx[12]) {
 	if (success) memcpy(idx, ifr.ifr_hwaddr.sa_data, 6);
 }
  
-/**void intToHex(long long n, char *buf[15]) {
-	char hex[15];
+/**void intToHex(long long n, char buf[]) {
+	dprintf(out, "%s\n", "Started intToHex method.");
+	char hex[100];
 	int i = 0;
 		while (n != 0) {
 			long long temp = 0;
 			temp = n % 16;
 			if(n < 10) {
-				hex[i] = temp + 48;
+				hex[i] = n + '0';
 				i++;
 			} else {
-				hex[i] = temp + 55;
+				hex[i] = n + 55;
 				i++;
 			}
 			n = n / 16;
 	}
+	dprintf(out, "%s\n", "Converted given time to hex.");
 	memcpy(buf, hex, 100);
+	dprintf(out, "%s\n","Copied hex string to given address");
 }**/
 long long get_clock() {
 	struct timespec spc;
