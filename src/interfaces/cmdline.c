@@ -115,9 +115,6 @@ static int cmd_get_uuid(int argc, char *argv[])
 }
 
 static int cmd_get_mac(int argc, char *argv[]) {
-	char *mac_address;
-	mac_address = get_mac_addr();
-	printf("%s\n", mac_address);
 	return 0;
 }
 

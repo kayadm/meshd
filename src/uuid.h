@@ -51,44 +51,23 @@ uint16_t nrand14(int n) {
 	return v;
 }
 
-char* get_mac_addr() {
-	struct ifreq ifr;
-	struct ifconf ifc;
-	char buf[1024];
-	int success = 0;
+char *get_mac_popen() {
+	FILE *fp;
 
-	int sock = socket(AF_INET, SOCK_DGRAM, IPPROTO_IP);
-	if (sock == -1) { /* handle error*/ };
-
-	ifc.ifc_len = sizeof(buf);
-	ifc.ifc_buf = buf;
-	if (ioctl(sock, SIOCGIFCONF, &ifc) == -1) { /* handle error */ }
-
-	struct ifreq* it = ifc.ifc_req;
-	const struct ifreq* const end = it + (ifc.ifc_len / sizeof(struct ifreq));
-
-	for (; it != end; ++it) {
-		strcpy(ifr.ifr_name, it->ifr_name);
-		if (ioctl(sock, SIOCGIFFLAGS, &ifr) == 0) {
-			if (!(ifr.ifr_flags & IFF_LOOPBACK)) { // don't count loopback
-				if (ioctl(sock, SIOCGIFHWADDR, &ifr) == 0) {
-					success = 1;
-					break;
-				}
-			}
-		}
-		else { /* handle error */ }
+	static char mac[17];
+	fp = popen("hcitool dev | grep -o '[[:xdigit:]:]\\{11,17\\}'", "r");
+	if(fp == NULL) {
+		printf("Failed to run command and get mac address.");
 	}
-	char *ret;
-	ret = malloc(sizeof(char) * 1025);
-	if (success) strcpy(ret, ifr.ifr_hwaddr.sa_data);
+	while(fgets(mac, 17, fp)) {
+		printf("%s", mac);
+	}
+	char * ret = malloc(sizeof(mac));
+	ret = mac;
+//	fgets(mac, sizeof(mac_ad-1), fp);
+	printf("%s", mac);
+	pclose(fp);
 	return ret;
-	/**if (success) {
-		dprintf(out, "%s\n", "mac initializetion complete. Copying to pointed string.");
-		for (int i = 0; i < 1024; ++i) {
-			idx[i] = ifr.ifr_hwaddr.sa_data[i];
-		}
-	}**/
 }
  
 /**void intToHex(long long n, char buf[]) {
@@ -120,24 +99,18 @@ long long get_clock() {
 	return timeNano;
 }
 
-char* UUID() {	
-	char *mac_addr;
-	mac_addr = get_mac_addr();
+char* UUID() {
+	char *mac_addr = get_mac_popen();
+	
 	char stamp_hex[100];
 	unsigned long long int timeNano = get_clock();
 	sprintf(stamp_hex, "%llx", timeNano);
 	int64_t old_tstmp = 0;
 	uint16_t nrand14(int n);
-	uint16_t clock_id = nrand14(120);
+	uint16_t clock_id = nrand14(4);
 	if (old_tstmp > timeNano) {
 		clock_id++;
 	}
-
-	char * convertNumberIntoArray(uint16_t number);
-	char arr_clock[4] = {0};
-	memcpy(arr_clock, convertNumberIntoArray(clock_id), 4); 
-	get_mac_addr(mac_addr);
-	printf("%s", arr_clock);
 	static char uuid[32];
 
 	int idx1 = 0;
@@ -148,42 +121,55 @@ char* UUID() {
 		idx1++;
 		i++;
 	}
-	dprintf(out, "%s\n", "First loop finished.");
+	dprintf(out, "%s\n%s\n", "First loop finished.", uuid);
 	i = 3;
 	while(i < 7) { //4 chars
 		uuid[idx1] = stamp_hex[i];
 		idx1++;
 		i++;
 	}
-	printf("%s\n", uuid);
-	dprintf(out, "%s\n", "Second loop finished.");
+	dprintf(out, "%s\n%s\n", "Second loop finished.", uuid);
 	i = 0;
-	int x = 1;
-	uuid[12] = x;
+	uuid[12] = '1';
 	idx1 = 13;
 	while (i < 3) {//3 chars
 		uuid[idx1] = stamp_hex[i];
 		idx1++;
 		i++;
 	}
-	dprintf(out, "%s\n", "Third loop finished.");
+	dprintf(out, "%s\n%s\n", "Third loop finished.", uuid);
 	i = 0;
-	idx1 = 15;
+	idx1 = 16;
 	while(i < 4) {
-		uuid[idx1] = arr_clock[i];
+		uuid[idx1] = (clock_id % 10) + '0';
+		clock_id = clock_id / 10;
 		idx1++;
 		i++;
 	}
-	dprintf(out, "%s\n", "Fourth loop finished.");
+	dprintf(out, "%s\n%s\n", "Fourth loop finished.", uuid);
 	i = 0;
-	idx1 = 19;
+	idx1 = 20;
+
+	FILE *fp;
+
+	static char mac[17];
+	fp = popen("hcitool dev | grep -o '[[:xdigit:]:]\\{11,17\\}'", "r");
+	if(fp == NULL) {
+		printf("Failed to run command and get mac address.");
+	}
+	/**while(fgets(mac, 17, fp)) {
+		printf("%s", mac);
+	}**/
+	i = 0;
 	while(i < 12) {
-		uuid[idx1] = mac_addr[i];
+		char mac_a[] = "B8763FDFC85B";
+		uuid[idx1] = mac_a[i];
 		idx1++;
 		i++;
 	}
-	dprintf(out, "%s\n", "Last loop finished.");
-	dprintf(out, "%s\n", uuid);
+	pclose(fp);
+
+	dprintf(out, "%s\n%s\n", "Last loop finished.", uuid);
 	return uuid;
 }
 
