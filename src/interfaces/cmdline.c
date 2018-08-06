@@ -6,9 +6,10 @@
 #include "../network.h"
 #include "../utils.h"
 #include "../node.h"
-
 #include "interface.h"
-
+static int cmd_scan_unprovisionned(int argc, char *argv[]);
+static int cmd_provision_device(int argc, char *argv[]);
+int counter=0x1233;
 static int out;
 
 struct cmd {
@@ -17,12 +18,34 @@ struct cmd {
 	int (*function)(int argc, char *argv[]);
 };
 
-void cmd_scan_callback(struct scan_result *res)
+void cmd_scan_callback(struct scan_result *res,gpointer data)
 {
 	char str[37];
 
 	uuid128_to_str(res->device_uuid, str);
 	dprintf(out, "%s\n", str);
+    char *datamx[1];
+    datamx[0]="off";
+    cmd_scan_unprovisionned(1,datamx);
+
+    char *datam[3];
+    datam[0]=str;
+    struct network *net = g_slist_last(node.network_l)->data;
+    if(g_slist_length(node.network_l)>0){
+        char temp1[88];
+        char temp2[88];
+
+        sprintf(temp1,"0x%02x",net->nid);
+        sprintf(temp2,"0x%02x",counter);
+
+        datam[1]=temp1;
+        datam[2]=temp2;
+
+        counter++;
+        cmd_provision_device(3,datam);
+    }else{
+        cmd_provision_device(1,str);
+    }
 }
 
 static int cmd_scan_unprovisionned(int argc, char *argv[])
@@ -36,7 +59,6 @@ static int cmd_scan_unprovisionned(int argc, char *argv[])
 		provision_scan_stop();
 	else
 		return -EINVAL;
-
 	return 0;
 }
 
@@ -83,21 +105,20 @@ static int cmd_provision_device(int argc, char *argv[])
 
 	if (argc >= 3)
 		sscanf(argv[2], "0x%04x", &addr);
-
 	return provision_device(NULL, uuid, net ? net->index : 0, addr, NULL);
 }
 
 static int cmd_set_uuid(int argc, char *argv[])
 {
-	uint8_t uuid[16] = {};
+    uint8_t uuid1[16] = {};
 
-	if (argc != 1)
-		return -EINVAL;
 
-	if (str_to_uuid128(argv[0], uuid))
-		return -EINVAL;
+    char uuid[37];
+    long long temp=get_clock();
+    sprintf(uuid,"llx",temp);
+    str_to_uuid128(uuid, uuid1);
+    memcpy(node.uuid,uuid1,sizeof(node.uuid));
 
-	memcpy(node.uuid, uuid, sizeof(uuid));
 
 	return 0;
 }
@@ -113,6 +134,31 @@ static int cmd_get_uuid(int argc, char *argv[])
 	return 0;
 }
 
+gboolean tmp_sendmsg(int argc, char *argv[])
+{
+    uint8_t nid;
+
+    struct network *net;
+
+    net = network_by_nid(nid);
+    unsigned int value;
+
+
+    sscanf(argv[0], "%x", &value);
+    nid = value;
+    uint16_t addr;
+    sscanf(argv[1], "%x", &value);
+    addr=value;
+
+    if (!net){
+        transport_up_send_access_msg(node.network_l->data,
+                         argv[2], sizeof(argv[2]), returnBaseAddressFromElement(), addr, 0);
+    }else{
+    transport_up_send_access_msg(node.network_l->data,
+                     argv[2], sizeof(argv[2]), net->addr, addr, 0);
+    }
+    return true;
+}
 static int cmd_sendnet(int argc, char *argv[])
 {
 	struct network_msg *nmsg;
@@ -132,7 +178,7 @@ static int cmd_sendnet(int argc, char *argv[])
 	addr = value;
 
 	net = network_by_nid(nid);
-	if (!net)
+    if (!net)
 		return -ENONET;
 
 	nmsg = network_msg_alloc(NMSG_HDR_SZ(NULL));
@@ -186,9 +232,9 @@ static const struct cmd cmdlist[] = {
 	{
 		.name = "net-send",
 		.desc = "<NID> <addr> <data> Send raw network message",
-		.function = cmd_sendnet,
+        .function = tmp_sendmsg,
 	},
-	{
+    {
 		.name = "set-uuid",
 		.desc = "<uuid>\tSet local node uuid",
 		.function = cmd_set_uuid,

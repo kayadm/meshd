@@ -295,8 +295,7 @@ static void transport_low_ack_work(work_t *work)
 	ack->seqzero_m = rbuf->seqauth >> 6;
 	ack->blockack = cpu_to_be32(rbuf->blockack);
 
-	g_message("Send Ack %x [auth-%lu]", rbuf->blockack,
-		  (unsigned long)rbuf->seqauth);
+
 
 	network_send_msg(rbuf->tl->net, nmsg);
 	network_msg_unref(nmsg);
@@ -605,8 +604,7 @@ static void transport_transmission_work(work_t *work)
 
 		memcpy(sam->data, tbuf->pdu + (i * SAM_MTU), seglen);
 
-		g_message("Send %d/%d [seqauth %lu]", i, segn,
-			  (unsigned long)tbuf->seqauth);
+
 
 		network_send_msg(tbuf->tl->net, nmsg);
 

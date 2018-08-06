@@ -189,9 +189,12 @@ int network_recv_msg(struct network_intf *nif, struct network_msg *nmsg)
 
 	/* Forward to low transport layer */
 	/* TODO accept group/broadcast/virutal if subscribed */
-	if (net->addr == be16_to_cpu(nmsg->dst) ||
-	    element_by_address(be16_to_cpu(nmsg->dst)))
-		transport_low_recv(net, nmsg);
+    if (net->addr == be16_to_cpu(nmsg->dst) || element_by_address(be16_to_cpu(nmsg->dst))){
+        transport_low_recv(net, nmsg);
+     }else{
+         g_message("RELAY-MESSAGE");
+         transport_low_recv(net, nmsg);
+     }
 
 	/* Relay ? */
 	if (nmsg->ttl < 2)
@@ -216,7 +219,7 @@ int network_send_msg(struct network *net, struct network_msg *nmsg)
 {
 	struct network_nonce nonce;
 	GSList *intfl;
-	int err;
+    int err,err1;
 
 	/* least significant bit of the current IV */
 	nmsg->ivi = net->iv_index & 0x01;
@@ -227,6 +230,7 @@ int network_send_msg(struct network *net, struct network_msg *nmsg)
 	nonce.type = NONCE_NETWORK;
 	memcpy(&nonce.ctl_ttl, (void *)nmsg + 1, 6);
 	nonce.iv_index = cpu_to_be32(net->iv_index);
+    err1 = network_cache_add(net, nmsg);
 
 	/* Authenticate and in-place encrypt of dst + transport pdu */
 	err = aes_ccm(net->ekey, (struct nonce *)&nonce, (uint8_t *)&nmsg->dst,
