@@ -2,13 +2,13 @@ CC := gcc
 CPPFLAGS = `pkg-config glib-2.0 --cflags`
 CFLAGS := `pkg-config glib-2.0 --cflags` -Wall -g
 LDFLAGS = `pkg-config glib-2.0 --libs`
-LDFLAGS = -lglib-2.0
-
+LDFLAGS = -lglib-2.0 -lm
+BLUEFLAGS= -lbluetooth
 CONF_CRYPTO := linux-kernel
 
 # Main Stack
 meshd-objs = \
-	src/main.o \
+        src/main.o \
 	src/network.o \
 	src/transport-low.o \
 	src/transport-up.o \
@@ -18,7 +18,11 @@ meshd-objs = \
 	src/bearer-adv.o \
 	src/workqueue.o \
 	src/advertisers/hci-channel.o \
-	src/crypto-$(CONF_CRYPTO).o
+	src/crypto-$(CONF_CRYPTO).o \
+	src/scan.o \
+	src/hcitool.o \
+	src/oui.o	\
+	src/textfile.o
 
 # Models
 meshd-objs += \
@@ -48,13 +52,13 @@ test-objs = \
 all: meshd
 
 meshd: $(meshd-objs) $(bluez-sharedlib)
-	$(CC) $(meshd-objs) $(bluez-sharedlib) $(LDFLAGS) $(CFLAGS) -o $@
+	$(CC) $(meshd-objs) $(bluez-sharedlib) $(BLUEFLAGS) $(LDFLAGS) $(CFLAGS) -o $@
 
 test: $(test-objs)
-	$(CC) $(test-objs) $(LDFLAGS) $(CFLAGS) -o $@
+	$(CC) $(test-objs) $(BLUEFLAGS) $(LDFLAGS) $(CFLAGS) -o $@
 
 %.o : %.c
-	$(CC) $(LDFLAGS) $(CFLAGS) -o $@ -c $<
+	$(CC) $(BLUEFLAGS) $(LDFLAGS) $(CFLAGS) -o $@ -c $<
 
 $(bluez-sharedlib): $(bluez-objs)
 	$(AR) rcs $@ $^

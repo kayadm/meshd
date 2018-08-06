@@ -30,8 +30,8 @@
  * @type:	parameter type
  */
 struct param_desc {
-	const char *name;
-	int type;
+    const char *name;
+    int type;
 };
 #define PARAM_BYTE ((int) 'y')
 #define PARAM_INT16 ((int) 'n')
@@ -53,12 +53,12 @@ typedef int (*amsg_onsend_cb)(const struct amsg_desc *desc, uint8_t *params);
  * @onrecv:	callback on access msg reception
  */
 struct amsg_desc {
-	const char *desc;
-	uint32_t opcode;
-	const struct amsg_desc *response;
-	const struct param_desc *params;
-	amsg_onrecv_cb onrecv;
-	amsg_onsend_cb onsend;
+    const char *desc;
+    uint32_t opcode;
+    const struct amsg_desc *response;
+    const struct param_desc *params;
+    amsg_onrecv_cb onrecv;
+    amsg_onsend_cb onsend;
 };
 
 /**
@@ -68,9 +68,9 @@ struct amsg_desc {
  * @tx:		array of supported tx access msgs
  */
 struct state {
-	const char *desc;
-	const struct amsg_desc **rx;
-	const struct amsg_desc **tx;
+    const char *desc;
+    const struct amsg_desc **rx;
+    const struct amsg_desc **tx;
 };
 
 /**
@@ -80,9 +80,9 @@ struct state {
  * states:	exposed states
  */
 struct server_model {
-	uint32_t id;
-	const char *desc;
-	const struct state **states;
+    uint32_t id;
+    const char *desc;
+    const struct state **states;
 };
 
 /**
@@ -91,8 +91,8 @@ struct server_model {
  * desc:        human readable model name
  */
 struct client_model {
-	uint32_t id;
-	const char *desc;
+    uint32_t id;
+    const char *desc;
 };
 
 /**
@@ -102,15 +102,18 @@ struct client_model {
  * serv_model_l: registered models
  */
 struct element {
-	uint8_t index;
-	GSList *subscribe_l;
-	GSList *serv_model_l;
+    uint8_t index;
+    GSList *subscribe_l;
+    GSList *serv_model_l;
 };
 
 struct element *element_by_index(int index);
-struct element *element_by_address(uint16_t addr);
+uint16_t returnBaseAddressFromElement();
 int access_recv_msg(void *data, size_t len, uint16_t src,
-		    uint16_t dst);
+            uint16_t dst);
+void processing_From_MessageType(void *data, size_t len, uint16_t src,uint16_t dst);
+int findRSSI_From_Address(char *dst);
+
 struct element *element_create(int index);
 int register_server_model(struct server_model *model, int instance);
 

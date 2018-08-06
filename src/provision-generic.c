@@ -401,9 +401,10 @@ static int generic_prov_recv_link_open(struct generic_prov_data *gpd,
 	};
 	void *session;
 
-	if (memcmp(node.uuid, open->uuid, sizeof(node.uuid)))
-		return 0;
-
+    if (memcmp(node.uuid, open->uuid, sizeof(node.uuid))!=0){
+        g_message("uuid does not match!!");
+        return 0;
+    }
 	if (link) /* link already exist. peer missed our ACK ? */
 		goto ack;
 
@@ -417,7 +418,6 @@ static int generic_prov_recv_link_open(struct generic_prov_data *gpd,
 	if (!link)
 		return -ENOMEM;
 
-	g_message("[link %d] New link opened by peer", link_id);
 
 	link->state = LINK_READY;
 
@@ -438,7 +438,6 @@ static int generic_prov_recv_link_close(struct generic_prov_data *gpd,
 
 	link->state = LINK_CLOSED;
 
-	g_message("[link %d] Link closed by peer", link_id);
 
 	provision_link_closed(link->session_id);
 
@@ -753,7 +752,6 @@ int generic_prov_bearer_register(struct generic_prov_bearer *gpb)
 	struct generic_prov_data *gpd;
 	int err;
 
-	g_message("Provisioning Bearer %s registered", gpb->name);
 
 	/* Create generic prov data */
 	gpd = calloc(1, sizeof(*gpd));
@@ -784,7 +782,6 @@ void generic_prov_bearer_unregister(struct generic_prov_bearer *gpb)
 {
 	struct generic_prov_data *gpd = gpb->priv;
 
-	g_message("Provisioning Bearer unregistered (%s)", gpb->name);
 
 	if (!gpd)
 		return;

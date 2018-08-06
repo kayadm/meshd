@@ -23,7 +23,7 @@
 #include <stdbool.h>
 #include <getopt.h>
 #include <unistd.h>
-
+#include "uuid.h"
 #include "node.h"
 #include "utils.h"
 #include "workqueue.h"
@@ -32,7 +32,6 @@
 #include "transport.h"
 #include "bearer.h"
 #include "access.h"
-
 #include "interfaces/interface.h"
 
 GMainLoop *mainloop;
@@ -42,7 +41,6 @@ gboolean signal_handler_interrupt(gpointer data)
 {
 	g_main_loop_quit(mainloop);
 
-	g_message("exiting meshd");
 
 	return G_SOURCE_CONTINUE;
 }
@@ -52,11 +50,39 @@ static const struct option main_options[] = {
 	{ "interactive", no_argument, NULL, 'i' },
 	{ }
 };
+gboolean tmp_sendResponseMessage(gpointer d,uint16_t srcAddress,uint16_t targetAddress,uint16_t dstAddress,int rssi)
+{
+    char data[] = "01 ";
+
+char datax[80];
+    sprintf(datax,",%x,",targetAddress);
+    char data1[88];
+    sprintf(data1,"%d,",rssi);
+    char data2[]=" ...";
+
+    char *fusionData=malloc(strlen(data)+strlen(datax)+strlen(data1)+strlen(data2)+1);
+    fusionData[0]='\0';
+    strcat(fusionData,data);
+    strcat(fusionData,datax);
+    strcat(fusionData,data1);
+    strcat(fusionData,data2);
+/*	*/
+    /*No need to control this part
+        if (!net)
+        g_message("No network");*/
+
+    transport_up_send_access_msg(node.network_l->data,
+                     fusionData, strlen(fusionData) , srcAddress, dstAddress, 0);
+
+    free(fusionData);
+    return true;
+}
+
 
 int main(int argc, char *argv[])
 {
-	bool interactive;
 
+    bool interactive;
 	mainloop = g_main_loop_new(NULL, FALSE);
 	if (mainloop == NULL)
 		return -ENOMEM;
@@ -76,6 +102,9 @@ int main(int argc, char *argv[])
 
 	crypto_init();
 	network_init();
+    char uuid[16];
+    UUID(uuid);
+    memcpy(node.uuid,uuid,16);
 	provision_init();
 	bearer_adv_init();
 	configuration_server_model_init();
