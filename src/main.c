@@ -98,6 +98,7 @@ int main(int argc, char *argv[])
 		}
 	}
 
+
 	element_create(0);
 
 	crypto_init();
