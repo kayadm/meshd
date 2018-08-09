@@ -7,7 +7,7 @@
 #include "../utils.h"
 #include "../node.h"
 #include "interface.h"
-static int cmd_scan_unprovisionned(int argc, char *argv[]);
+ int cmd_scan_unprovisionned(int argc, char *argv[]);
 static int cmd_provision_device(int argc, char *argv[]);
 int counter=0x1233;
 static int out;
@@ -48,11 +48,10 @@ void cmd_scan_callback(struct scan_result *res,gpointer data)
     }
 }
 
-static int cmd_scan_unprovisionned(int argc, char *argv[])
+ int cmd_scan_unprovisionned(int argc, char *argv[])
 {
 	if (argc != 1)
 		return -EINVAL;
-
 	if (!strcmp("on", argv[0]))
 		provision_scan(cmd_scan_callback, 0);
 	else if (!strcmp("off", argv[0]))
@@ -62,7 +61,7 @@ static int cmd_scan_unprovisionned(int argc, char *argv[])
 	return 0;
 }
 
-static int cmd_create_network(int argc, char *argv[])
+ int cmd_create_network(int argc, char *argv[])
 {
 	network_provision_new();
 	return 0;

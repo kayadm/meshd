@@ -33,7 +33,9 @@
 #include "bearer.h"
 #include "access.h"
 #include "interfaces/interface.h"
-
+#include <gtk/gtk.h>
+#include <stdlib.h>
+bool scanState=false;
 GMainLoop *mainloop;
 struct node_st node;
 
@@ -77,10 +79,76 @@ char datax[80];
     free(fusionData);
     return true;
 }
+void on_window_destroy ()
+{
+    mainloop=NULL;
+    gtk_main_quit();
+    exit(0);
+}
+void callProvision(){
+    if (!scanState){
+        char *argument[1];
+        argument[0]="on";
+        cmd_scan_unprovisionned(1,argument);
+        scanState=true;
+    }else{
+        char *argument[1];
+        argument[0]="off";
+        cmd_scan_unprovisionned(1,argument);
+        scanState=false;
+    }
+}
+void callNetCreate(){
 
+    cmd_create_network(0,0);
+}
+GtkEntry *nidentry;
+GtkEntry *addrentry;
+GtkEntry *dataentry;
+void callsendMesg(){
+    gchar *text;
+    text = gtk_entry_get_text(GTK_ENTRY(nidentry));
+    gchar *text1;
+    text1 = gtk_entry_get_text(GTK_ENTRY(addrentry));
+    gchar *text2;
+    text2 = gtk_entry_get_text(GTK_ENTRY(dataentry));
+    char *data[3];
+    data[0]=text;
+    data[1]=text1;
+    data[2]=text2;
+    tmp_sendmsg(3,data);
+}
 
 int main(int argc, char *argv[])
 {
+   GtkBuilder *builder;
+    GtkWidget *window;
+    GError *err = NULL;
+    char *filename="/guiex.glade";
+    char *symlinkpath = "meshdvson/src/GLADE/guiex.glade";
+    char actualpath [PATH_MAX];
+
+
+    realpath(symlinkpath, actualpath);
+    char *builder_file=malloc(sizeof(char)*(strlen(filename)+strlen(actualpath)+1));
+    strcpy(builder_file,actualpath);
+    strcat(builder_file,filename);
+    g_message(builder_file);
+
+
+    gtk_init(&argc, &argv);
+    builder = gtk_builder_new();
+    if (gtk_builder_add_from_file(builder, actualpath, &err) == 0) {
+        fprintf(stderr, "Error adding builder from file %s\n%s\n",
+            builder_file, err->message);
+
+    }
+    gtk_builder_connect_signals(builder, NULL);
+    window = GTK_WIDGET(gtk_builder_get_object(builder, "mywindow"));
+    if (window == NULL) {
+        fprintf(stderr, " Object window not found\n");
+
+    }
 
     bool interactive;
 	mainloop = g_main_loop_new(NULL, FALSE);
@@ -97,10 +165,38 @@ int main(int argc, char *argv[])
 			break;
 		}
 	}
+ GdkColor color;
+    GdkColor color2;
+    GdkColor color3;
+    GdkColor color4;
 
+    gdk_color_parse ("#DCEAE6", &color);
+    gdk_color_parse ("#DCEAE6", &color2);
+    gdk_color_parse ("#DCEAE6", &color3);
+    gdk_color_parse ("#DCEAE6", &color4);
+
+    GtkBox *box1=GTK_WIDGET(gtk_builder_get_object(builder, "allBoxes"));
+
+  GtkBox *grid1=GTK_WIDGET(gtk_builder_get_object(builder, "gridUpper"));
+
+    GtkBox *grid2=GTK_WIDGET(gtk_builder_get_object(builder, "gridMiddle"));
+    GtkBox *grid3=GTK_WIDGET(gtk_builder_get_object(builder, "gridlower"));
+nidentry=GTK_WIDGET(gtk_builder_get_object(builder, "netidtext"));
+addrentry=GTK_WIDGET(gtk_builder_get_object(builder, "addresstext"));
+dataentry=GTK_WIDGET(gtk_builder_get_object(builder, "datatext"));
+
+
+if (box1 == NULL) {
+    fprintf(stderr, " Object window not found\n");
+
+}
+    gtk_widget_modify_bg( GTK_WIDGET(box1), GTK_STATE_NORMAL, &color);
+  /*  gtk_widget_modify_bg( GTK_WIDGET(grid1), GTK_STATE_NORMAL, &color2);
+
+    gtk_widget_modify_bg( GTK_WIDGET(grid2), GTK_STATE_NORMAL, &color3);
+    gtk_widget_modify_bg( GTK_WIDGET(grid3), GTK_STATE_NORMAL, &color4);*/
 
 	element_create(0);
-
 	crypto_init();
 	network_init();
     char uuid[16];
@@ -110,8 +206,14 @@ int main(int argc, char *argv[])
 	bearer_adv_init();
 	configuration_server_model_init();
 
-	if (interactive)
-		cmdline_init(STDIN_FILENO, STDOUT_FILENO);
+
+    if (interactive)
+        cmdline_init(STDIN_FILENO, STDOUT_FILENO);
+
+    g_object_unref (G_OBJECT (builder));
+    gtk_widget_show_all(box1);
+    gtk_widget_show_all(window);
+    gtk_main();
 
 	g_main_loop_run(mainloop);
 

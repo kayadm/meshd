@@ -3,6 +3,7 @@ CPPFLAGS = `pkg-config glib-2.0 --cflags`
 CFLAGS := `pkg-config glib-2.0 --cflags` -Wall -g
 LDFLAGS = `pkg-config glib-2.0 --libs`
 LDFLAGS = -lglib-2.0 -lm
+LDXFLAGS = `pkg-config --cflags --libs gtk+-3.0`
 BLUEFLAGS= -lbluetooth
 CONF_CRYPTO := linux-kernel
 
@@ -52,13 +53,13 @@ test-objs = \
 all: meshd
 
 meshd: $(meshd-objs) $(bluez-sharedlib)
-	$(CC) $(meshd-objs) $(bluez-sharedlib) $(BLUEFLAGS) $(LDFLAGS) $(CFLAGS) -o $@
+	$(CC) $(meshd-objs) $(bluez-sharedlib) $(LDXFLAGS) $(BLUEFLAGS) $(LDFLAGS) $(CFLAGS) -o $@
 
 test: $(test-objs)
-	$(CC) $(test-objs) $(BLUEFLAGS) $(LDFLAGS) $(CFLAGS) -o $@
+	$(CC) $(test-objs) $(BLUEFLAGS) $(LDXFLAGS) $(LDFLAGS) $(CFLAGS) -o $@
 
 %.o : %.c
-	$(CC) $(BLUEFLAGS) $(LDFLAGS) $(CFLAGS) -o $@ -c $<
+	$(CC) $(BLUEFLAGS) $(LDXFLAGS) $(LDFLAGS) $(CFLAGS) -o $@ -c $<
 
 $(bluez-sharedlib): $(bluez-objs)
 	$(AR) rcs $@ $^
