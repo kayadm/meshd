@@ -246,6 +246,7 @@ void processing_From_MessageType(void *data, size_t len, uint16_t src,uint16_t d
     pch = strtok (subbuff,",");
 
     if (strcmp(pch,"00")==0){
+        oldRSSI=-1000;
         pch = strtok (NULL,",.! ");
         char s[88];
         sprintf(s,"%d",returnBaseAddressFromElement());
