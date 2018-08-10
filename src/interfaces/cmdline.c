@@ -59,12 +59,9 @@ void cmd_scan_callback(struct scan_result *res,gpointer data)
     char *datam[3];
     datam[0]=str;
 
-    char *labeltext1="Provision Started for";
     char *labeltext2=str;
-    char *labeltext;
-    strcpy(labeltext,labeltext1);
-    strcat(labeltext,labeltext2);
-    gtk_label_set_text(label,labeltext);
+
+    gtk_label_set_text(label,labeltext2);
 
     struct network *net = g_slist_last(node.network_l)->data;
     if(g_slist_length(node.network_l)>0){
