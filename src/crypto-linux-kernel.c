@@ -351,7 +351,6 @@ int aes_ccm(uint8_t key[16], struct nonce *nonce, const uint8_t *plain,
 
 	len = sendmsg(fd, &msg, 0);
 	if (len < 0) {
-		g_message("crypto-send: %s", strerror(errno));
 		close(fd);
 		free(cbuf);
 		return -EINVAL;
@@ -362,7 +361,6 @@ int aes_ccm(uint8_t key[16], struct nonce *nonce, const uint8_t *plain,
 	/* FIX ME */
 	len = read(fd, res, plen);
 	if (len < 0) {
-		g_message("crypto_recv: %s", strerror(errno));
 		close(fd);
 		return -EINVAL;
 	}
@@ -590,7 +588,6 @@ int k4(uint8_t N[16], uint8_t *dkey)
 	/* K4(N) = AES-CMAC T ( “id6” || 0x01 ) mod 2 ^ 6 */
 	err = aes_cmac(T, entry, sizeof(entry), tmp);
 	if (err) {
-		g_message("%s", strerror(err));
 		return err;
 	}
 

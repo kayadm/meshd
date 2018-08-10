@@ -361,8 +361,7 @@ static void prov_switch_state(struct prov_session *session,
 	if (!session->state)
 		goto enter;
 
-	g_message("[Session %d.%p] Exit %s", session->role, session,
-		  session->state->id);
+
 
 	if (session->state->exit) {
 		err = session->state->exit(session);
@@ -375,8 +374,7 @@ static void prov_switch_state(struct prov_session *session,
 enter:
 	session->state = state;
 
-	g_message("[Session %d.%p] Enter %s", session->role, session,
-		  session->state->id);
+
 
 	if (session->state->enter) {
 		err = session->state->enter(session);
@@ -767,7 +765,7 @@ static int enter_data(struct prov_session *session)
 	pdata->key_index = cpu_to_be16(session->net_index);
 	pdata->flags = 0x00; /* TODO */
 	pdata->iv_index = cpu_to_be32(net->iv_index);
-	pdata->addr = cpu_to_be16(0x1234);
+    pdata->addr = cpu_to_be16(session->address);
 
 	/* EncryptProvData, MIC = AES-CCM(SessionKey, SessionNonce, ProvData) */
 	err = aes_ccm(session->session_key, (void*)session->session_nonce16 + 3,
@@ -840,8 +838,8 @@ static void release_session(work_t *work)
 	session = container_of(work, struct prov_session, to_work);
 
 	g_message("[Session %d.%p] Release", session->role, session);
-
-	session->pif->close(session->pif, session, 0x00);
+    updateLabel("Provision Success");
+    session->pif->close(session->pif, session, 0x00);
 	session_l = g_slist_remove(session_l, session);
 	g_free(session);
 }
@@ -1047,24 +1045,20 @@ int provision_device(struct prov_interface *pif,
 	struct network *net;
 	char uuid[37];
 	int err;
-
 	if (g_slist_find_custom(session_l, device_uuid, match_session_by_uuid))
 		return -EALREADY;
 
 	if (ADDR_TYPE(addr) != ADDR_TYPE_UNICAST)
 		return -EINVAL;
-
 	/* TODO add net index as function parameter */
 	net = network_by_index(net_index);
 	if (!net)
 		return -ENETUNREACH;
-
 	session = g_new0(struct prov_session, 1);
 
 	if (!pif && pif_l) {
 		pif = pif_l->data;
 	}
-
 	session->net_index = net_index;
 	session->pif = pif;
 	session->cb = cb;
