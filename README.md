@@ -3,6 +3,7 @@ Using Bluetooth mesh stack POC for Linux for find location of Bluetooth Device.
 In development...
 
 dependencies:
+- Gtk
 - lbluetooth
 - glib
 - Request (for now) crypto kernel UAPI with following config:
